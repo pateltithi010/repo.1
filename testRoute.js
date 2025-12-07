@@ -1,10 +1,8 @@
-// src/routes/testRoute.js
-const express = require('express');
+import express from "express";
 const router = express.Router();
 
-// GET /api/test
-router.get('/', (req, res) => {
-  res.json({ success: true, message: 'Test route OK' });
+router.get("/", (req, res) => {
+  res.send("Test API working!");
 });
 
-module.exports = router;
+export default router;

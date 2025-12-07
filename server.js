@@ -1,12 +1,28 @@
+console.log("Server file loaded...");
+import resourceRoute from "./routes/resourceRoute.js";
 import express from "express";
-import authRoute from "./routes/authRoute.js"; // your import is correct
+import dotenv from "dotenv";
+import connectDB from "./config/db.js";
+import testRoute from "./routes/testRoute.js";
+import authRoute from "./routes/authRoute.js";
 
+dotenv.config();
 const app = express();
 
-// Middleware to parse JSON
+connectDB();
+
+// MIDDLEWARE SHOULD COME BEFORE ROUTES
 app.use(express.json());
 
-// Register the route
+// ROUTES
+app.use("/api/test", testRoute);
 app.use("/api/auth", authRoute);
+app.use(express.json());
+app.use("/api/resource", resourceRoute);
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+
+// SERVER SHOULD BE LAST
+app.listen(process.env.PORT, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
+});
+  
