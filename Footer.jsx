@@ -1,9 +1,7 @@
-function Footer() {
+export default function Footer() {
   return (
-    <footer className="bg-dark text-white text-center p-3 mt-5">
-      <p>© 2025 My App</p>
-    </footer>
-  )
+    <p className="text-center text-muted mt-5 mb-3">
+      © 2025 Expense Tracker UI
+    </p>
+  );
 }
-
-export default Footer;

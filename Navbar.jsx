@@ -1,9 +1,15 @@
-function Navbar() {
+export default function Navbar({ setPage }) {
   return (
-    <nav className="navbar navbar-dark bg-dark p-3">
-      <h2 className="text-white">My App</h2>
-    </nav>
-  )
+    <div className="d-flex justify-content-center gap-4 mt-3">
+      <button className="btn btn-outline-dark btn-lg" onClick={() => setPage("Home")}>
+        Home
+      </button>
+      <button className="btn btn-outline-dark btn-lg" onClick={() => setPage("About")}>
+        About
+      </button>
+      <button className="btn btn-outline-dark btn-lg" onClick={() => setPage("Project")}>
+        Project
+      </button>
+    </div>
+  );
 }
-
-export default Navbar;

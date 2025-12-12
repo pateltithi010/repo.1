@@ -1,45 +1,20 @@
-export default function ItemCard({ item, onDelete, onEdit }) {
+export default function ItemCard({ item, onDelete, onToggle }) {
   return (
-    <div
-      style={{
-        background: "#f8f9ff",
-        padding: "20px",
-        borderRadius: "15px",
-        marginBottom: "15px",
-        width: "450px",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-      }}
-    >
-      <h3>{item.title}</h3>
-      <p><b>Category:</b> {item.category}</p>
-      <p><b>Description:</b> {item.desc}</p>
+    <div className="card p-3 mb-3 shadow-sm">
+      <h5 className={item.completed ? "text-decoration-line-through" : ""}>
+        {item.title}
+      </h5>
+      <p className="mb-1">Amount: ₹{item.amount}</p>
+      <p className="mb-2">Date: {item.date}</p>
 
       <button
-        onClick={onEdit}
-        style={{
-          marginRight: "10px",
-          padding: "10px 16px",
-          background: "#2563eb",
-          color: "white",
-          border: "none",
-          borderRadius: "10px",
-          cursor: "pointer",
-        }}
+        className="btn btn-success me-3"
+        onClick={() => onToggle(item.id)}
       >
-        Edit
+        {item.completed ? "Undo" : "Mark Complete"}
       </button>
 
-      <button
-        onClick={onDelete}
-        style={{
-          padding: "10px 16px",
-          background: "#ef4444",
-          color: "white",
-          border: "none",
-          borderRadius: "10px",
-          cursor: "pointer",
-        }}
-      >
+      <button className="btn btn-danger" onClick={() => onDelete(item.id)}>
         Delete
       </button>
     </div>

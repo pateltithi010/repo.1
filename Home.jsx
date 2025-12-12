@@ -1,10 +1,8 @@
-function Home() {
+export default function Home() {
   return (
-    <div className="container mt-4 text-center">
-      <h1>Welcome to My App</h1>
-      <p>This is a component.</p>
+    <div className="text-center">
+      <h1 className="fw-bold display-5">Welcome to the Expense Tracker</h1>
+      <p className="fs-4 mt-3">Use this UI to track your daily expenses easily.</p>
     </div>
-  )
+  );
 }
-
-export default Home;
