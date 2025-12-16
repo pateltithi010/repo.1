@@ -2,16 +2,25 @@ import express from "express";
 import cors from "cors";
 
 const app = express();
-app.use(cors());
+const PORT = 3000;
 
-app.get("/api/users", (req, res) => {
+app.use(cors());
+app.use(express.json()); // VERY IMPORTANT for POST data
+
+// POST API
+app.post("/api/users", (req, res) => {
+  const { name, email } = req.body;
+
+  console.log("POST request received:");
+  console.log("Name:", name);
+  console.log("Email:", email);
+
   res.json({
-    message: "Backend API is working!",
-    users: ["Tithi"]
+    success: true,
+    message: "User received successfully",
   });
 });
 
-const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

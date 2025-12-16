@@ -1,45 +1,58 @@
-
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 function App() {
-  const [data, setData] = useState(null);
-  const [error, setError] = useState(null);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    fetch("http://localhost:3000/api/users")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("API error");
-        }
-        return res.json();
-      })
-      .then((result) => {
-        setData(result);
-      })
-      .catch((err) => {
-        setError(err.message);
-      });
-  }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const response = await fetch("http://localhost:3000/api/users", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email }),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      setMessage("User submitted successfully ✅");
+      setName("");
+      setEmail("");
+    }
+  };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Frontend–Backend Integration</h1>
+    <div style={{ padding: "40px" }}>
+      <h1>Day2:Frontend & Backend Integration</h1>
+      <h2>Submit User</h2>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <br /><br />
 
-      {!data && !error && <p>Loading...</p>}
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <br /><br />
 
-      {data && (
-        <>
-          <h3>Message: {data.message}</h3>
-          <h4>Users:</h4>
-          <ul>
-            {data.users.map((user, i) => (
-              <li key={i}>{user}</li>
-            ))}
-          </ul>
-        </>
-      )}
+        <button type="submit">Submit</button>
+      </form>
+
+      {message && <p>{message}</p>}
     </div>
   );
 }
