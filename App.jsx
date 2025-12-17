@@ -1,58 +1,70 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
+  const [items, setItems] = useState([]);
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
 
+  // Fetch data on load
+  useEffect(() => {
+    fetch("http://localhost:5000/api/items")
+      .then(res => res.json())
+      .then(data => setItems(data))
+      .catch(() => setMessage("Error fetching data"));
+  }, []);
+
+  // Submit new data
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const response = await fetch("http://localhost:3000/api/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name, email }),
-    });
+    if (!name.trim()) {
+      setMessage("Item name cannot be empty");
+      return;
+    }
 
-    const data = await response.json();
+    try {
+      const res = await fetch("http://localhost:5000/api/items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
 
-    if (data.success) {
-      setMessage("User submitted successfully ✅");
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage(data.message);
+        return;
+      }
+
+      setItems([...items, data]);
       setName("");
-      setEmail("");
+      setMessage("Item added successfully");
+    } catch {
+      setMessage("Server error");
     }
   };
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Day2:Frontend & Backend Integration</h1>
-      <h2>Submit User</h2>
+    <div style={{ padding: "20px" }}>
+      <h2>Items List</h2>
+
+      {message && <p>{message}</p>}
 
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Name"
           value={name}
+          placeholder="Enter item name"
           onChange={(e) => setName(e.target.value)}
-          required
         />
-        <br /><br />
-
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <br /><br />
-
-        <button type="submit">Submit</button>
+        <button type="submit">Add Item</button>
       </form>
 
-      {message && <p>{message}</p>}
+      <ul>
+        {items.map(item => (
+          <li key={item.id}>{item.name}</li>
+        ))}
+      </ul>
     </div>
   );
 }

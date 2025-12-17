@@ -1,26 +1,37 @@
-import express from "express";
+ import express from "express";
 import cors from "cors";
 
 const app = express();
-const PORT = 3000;
-
 app.use(cors());
-app.use(express.json()); // VERY IMPORTANT for POST data
+app.use(express.json());
 
-// POST API
-app.post("/api/users", (req, res) => {
-  const { name, email } = req.body;
+let items = [
+  { id: 1, name: "Apple" },
+  { id: 2, name: "Banana" }
+];
 
-  console.log("POST request received:");
-  console.log("Name:", name);
-  console.log("Email:", email);
-
-  res.json({
-    success: true,
-    message: "User received successfully",
-  });
+// GET API
+app.get("/api/items", (req, res) => {
+  res.json(items);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+// POST API
+app.post("/api/items", (req, res) => {
+  const { name } = req.body;
+
+  if (!name) {
+    return res.status(400).json({ message: "Item name required" });
+  }
+
+  const newItem = {
+    id: Date.now(),
+    name
+  };
+
+  items.push(newItem);
+  res.status(201).json(newItem);
+});
+
+app.listen(5000, () => {
+  console.log("Backend running on http://localhost:5000");
 });
