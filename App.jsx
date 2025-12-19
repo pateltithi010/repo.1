@@ -1,70 +1,124 @@
 import { useEffect, useState } from "react";
+import "./App.css";
+
+const API_URL = "http://localhost:3000/api/expenses";
 
 function App() {
-  const [items, setItems] = useState([]);
-  const [name, setName] = useState("");
+  const [expenses, setExpenses] = useState([]);
+  const [title, setTitle] = useState("");
+  const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState("");
   const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  // Fetch data on load
+  // READ
+  const fetchExpenses = async () => {
+    try {
+      const res = await fetch(API_URL);
+      const data = await res.json();
+      setExpenses(data);
+    } catch (err) {
+      setError("Failed to fetch expenses");
+    }
+  };
+
   useEffect(() => {
-    fetch("http://localhost:5000/api/items")
-      .then(res => res.json())
-      .then(data => setItems(data))
-      .catch(() => setMessage("Error fetching data"));
+    fetchExpenses();
   }, []);
 
-  // Submit new data
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!name.trim()) {
-      setMessage("Item name cannot be empty");
+  // CREATE
+  const addExpense = async () => {
+    if (!title || !amount || !category) {
+      setError("All fields are required");
+      setMessage("");
       return;
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/items", {
+      await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name })
+        body: JSON.stringify({ title, amount, category }),
       });
 
-      const data = await res.json();
+      setMessage("Expense added successfully");
+      setError("");
+      setTitle("");
+      setAmount("");
+      setCategory("");
+      fetchExpenses();
+    } catch (err) {
+      setError("Error adding expense");
+    }
+  };
 
-      if (!res.ok) {
-        setMessage(data.message);
-        return;
-      }
-
-      setItems([...items, data]);
-      setName("");
-      setMessage("Item added successfully");
-    } catch {
-      setMessage("Server error");
+  // DELETE
+  const deleteExpense = async (id) => {
+    try {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      setMessage("Expense deleted successfully");
+      setError("");
+      fetchExpenses();
+    } catch (err) {
+      setError("Error deleting expense");
     }
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Items List</h2>
+    <div className="app-container">
+      <div className="expense-card">
+        <h1>Expense Tracker</h1>
 
-      {message && <p>{message}</p>}
+        {message && <p className="success">{message}</p>}
+        {error && <p className="error">{error}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={name}
-          placeholder="Enter item name"
-          onChange={(e) => setName(e.target.value)}
-        />
-        <button type="submit">Add Item</button>
-      </form>
+        {/* FORM */}
+        <div className="form">
+          <div className="inputs">
+            <input
+              placeholder="Title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+            <input
+              placeholder="Amount"
+              type="number"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+            <input
+              placeholder="Category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            />
+          </div>
 
-      <ul>
-        {items.map(item => (
-          <li key={item.id}>{item.name}</li>
-        ))}
-      </ul>
+          <button onClick={addExpense}>Add Expense</button>
+        </div>
+
+        {/* LIST */}
+        <div className="list">
+          {expenses.length === 0 && (
+            <p className="empty">No expenses added yet</p>
+          )}
+
+          {expenses.map((exp) => (
+            <div className="item" key={exp.id}>
+              <div className="item-text">
+                <b>{exp.title}</b>
+                <small>{exp.category}</small>
+              </div>
+
+              <div className="item-right">
+                <span className="amount">₹{exp.amount}</span>
+                <button onClick={() => deleteExpense(exp.id)}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
